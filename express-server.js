@@ -7,10 +7,26 @@ app.get('/', (request, response) => {
     response.send(html)
 })
 
-app.get('/api/car', (request, response) => {
+// Params
+app.get('/api/car/:model/:id', (request, response) => {
+    // get params from request - /api/car/sport/7
+    const { id, model } = request.params;
+
     response.send({
-        model: 'Mustang',
+        id,
+        model,
         color: "Yellow"
+    });
+})
+
+// Query string
+app.get('/api/user', (request, response) => {
+    // get params from query string - /api/user?name=Tom&age=21
+    const { name, age } = request.query;
+
+    response.send({
+        name,
+        age
     });
 })
 
