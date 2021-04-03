@@ -1,11 +1,20 @@
+const fs = require('fs');
 const express = require('express');
 const app = express();
 
 const html = '<html lang="en"><body><h1 style="background: lemonchiffon">Express html</h1></body></html>';
 
+const HTML = fs.readFileSync(`${__dirname}/index.html`);
+
+// Middleware, do something on all the routes
+app.use('/public/css', express.static(__dirname + '/public/css'));
+
+
 app.get('/', (request, response) => {
-    response.send(html)
+    // response.send(HTML) // load the HTML
+    response.end(HTML)
 })
+
 
 // Params
 app.get('/api/car/:model/:id', (request, response) => {
