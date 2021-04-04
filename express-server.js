@@ -1,4 +1,5 @@
 const fs = require('fs');
+const bodyParser = require('body-parser');
 const express = require('express');
 const app = express();
 
@@ -35,8 +36,6 @@ app.get('/', myMiddleware, (request, response) => {
     response.end(HTML);
 })
 
-
-
 // Params
 app.get('/api/car/:model/:id', myMiddleware, (request, response) => {
     // get params from request - /api/car/sport/7
@@ -59,6 +58,32 @@ app.get('/api/user', (request, response) => {
         age
     });
 })
+
+
+/**
+ * Body parser use example
+ */
+// Add middleware for body parse - application/json
+app.use(bodyParser.json());
+// parse application/x-www-form-urlencoded
+// app.use(bodyParser.urlencoded({ extended: false }))
+
+// Step 1 - listen on client get request to '/user'
+app.get('/user', (req, res) => {
+    // Step 2 - read html file for 'user' route
+    const USER_HTML = fs.readFileSync(`${__dirname}/views/user.html`);
+    // Step 3 - response with html, witch contains post request to 'api/adduser'
+    res.end(USER_HTML);
+
+})
+
+// Step 3 - listen on client post request to '/api/adduser',
+// read parsed body and response with status 200.
+app.post('/api/adduser', (request, response) => {
+    console.log( request.body );
+    response.sendStatus(200)
+})
+
 
 // Dynamic port for live server
 const port = process.env.PORT || 3000
