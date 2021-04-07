@@ -6,21 +6,42 @@ const { MongoClient } = require('mongodb');
 const { uri: mongoUri } = require('./mogodbCredentials');
 
 const options = { useNewUrlParser: true, useUnifiedTopology: true };
-MongoClient.connect(mongoUri, options,
-    (error, client) => {
-        error ? console.log('DB connection error:', error) :
-                console.log('Connection to DB is OK!');
-});
+const client = new MongoClient(mongoUri, options);
 
-/**
- *  Example from Cluster
-const client = new MongoClient(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true });
-client.connect(err => {
-    const collection = client.db("test").collection("devices");
-    // perform actions on the collection object
-    client.close();
+
+app.get('/api/users/add', async (request, response) => {
+    /**
+     * Add user to Collection
+     * Example 1
+     *
+    client.connect( async error => {
+        if ( !error ) {
+            const collection = client.db('studyDatabase').collection('users');
+            await collection.insertOne({name: 'Iron Man', role: 'hero'});
+            response.json({success: true});
+            client.close();
+        } else {
+            console.log('Connect error:', error);
+        }
+    });
+    */
+
+    // Example 2
+    try {
+        await client.connect();
+        const db = client.db('studyDatabase');
+        const collection = db.collection('users');
+        const query = await collection.insertOne({name: 'Spider Man', role: 'hero'});
+
+        response.status(200).json({success: true});
+
+    } catch ( error ) {
+        console.log('Db error:', error);
+    } finally {
+        client.close();
+    }
+
 });
-*/
 
 
 app.get('/api/users', (request, response) => {
@@ -30,6 +51,7 @@ app.get('/api/users', (request, response) => {
            { id: 3, name: 'Batman' }
        ]);
 });
+
 
 
 // 3000 is for client
