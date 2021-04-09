@@ -38,33 +38,45 @@ app.post('/api/car/add', (request, response) => {
 
     // Save to DB
     addCar.save( (error, document) => {
-        if ( error ) {
-            response.json(error);
-        } else {
-            response.status(200).json(document)
-        }
+        if ( error ) { response.json(error); }
+        response.status(200).json(document);
     });
 
 });
 
 app.get('/api/cars', (request, response) => {
-    /*
+
     // find all documents
     Car.find( (error, docs) => {
-        if ( error ) {
-            response.json(error);
-        } else {
-            response.status(200).json(docs)
-        }
+        if ( error ) { response.json(error); }
+        response.status(200).json(docs)
     });
-    */
 
+    /*
     // find by brand field example
     Car.find( { brand: 'Mazda' }, (error, docs) => {
         if ( error ) { return response.json(error); }
         response.status(200).json(docs)
     });
+    */
 
+});
+
+app.post('/api/car/delete', (request, response) => {
+   const { brand, all } = request.body;
+   Car.findOneAndDelete({ brand }, error => {
+       if ( error ) { response.json(error); }
+       response.json({deleted: true});
+   });
+
+    /**
+     * Remove all documents by brand
+     *
+   Car.remove({ brand }, error => {
+       if ( error ) { response.json(error); }
+       response.json({deleted: true});
+   });
+   */
 });
 
 
