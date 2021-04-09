@@ -1,6 +1,10 @@
 const express = require('express');
 const app = express();
+const bodyParser = require('body-parser')
 const mongoose = require('mongoose');
+
+// parse application/json
+app.use(bodyParser.json())
 
 const mongoUri = require('./mogodbCredentials').uri;
 
@@ -26,6 +30,22 @@ const carSchema = mongoose.Schema({
 
 // Create entity Model
 const Car = mongoose.model('Car', carSchema);
+
+app.post('/api/car/add', (request, response) => {
+
+    // Create instance of Model with data
+    const addCar = new Car(request.body);
+
+    // Save to DB
+    addCar.save( (error, document) => {
+        if ( error ) {
+            response.json(error);
+        } else {
+            response.status(200).json(document)
+        }
+    });
+
+});
 
 
 // 3000 is for client
