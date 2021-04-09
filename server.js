@@ -47,6 +47,26 @@ app.post('/api/car/add', (request, response) => {
 
 });
 
+app.get('/api/cars', (request, response) => {
+    /*
+    // find all documents
+    Car.find( (error, docs) => {
+        if ( error ) {
+            response.json(error);
+        } else {
+            response.status(200).json(docs)
+        }
+    });
+    */
+
+    // find by brand field example
+    Car.find( { brand: 'Mazda' }, (error, docs) => {
+        if ( error ) { return response.json(error); }
+        response.status(200).json(docs)
+    });
+
+});
+
 
 // 3000 is for client
 const port = process.env.PORT || 3001
