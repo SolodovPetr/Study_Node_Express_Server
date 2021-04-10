@@ -15,6 +15,15 @@ app.use(bodyParser.json());
 //MODELS
 const { User } = require('./models/user');
 
+// ROUTES
+app.post('/api/user', (request, response) => {
+    const { email, password } = request.body;
+    const user  = User({email, password});
+    user.save((error, doc) => {
+        if ( error ) { return response.status(400).json(error) }
+        response.status(200).json(doc)
+    })
+});
 
 const port = process.env.PORT || 3001;
 app.listen(port, () => {
