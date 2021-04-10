@@ -37,11 +37,20 @@ export default class App extends Component {
             })
     }
 
+    updateCar = () => {
+        axios.post('/api/car/update', {
+                _id: "60703b1a11352538982f9c34",
+                model: 'Mango'
+            })
+            .then( res => {
+                this.renderCars()
+                console.log(res.data)
+            })
+    }
+
     removeOneCar = () => {
         axios.post('/api/car/delete', { brand: this.state.delete })
-                .then( res => {
-                    this.renderCars();
-                })
+                .then( res => this.renderCars() )
     }
 
     setCarToDelete(e) {
@@ -85,6 +94,9 @@ export default class App extends Component {
                 { this.state.delete && (
                     <button onClick={this.removeOneCar}>Remove {this.state.delete}</button>
                 ) }
+
+                <button onClick={this.updateCar}>Update</button>
+
             </div>
         );
     }

@@ -38,7 +38,7 @@ app.post('/api/car/add', (request, response) => {
 
     // Save to DB
     addCar.save( (error, document) => {
-        if ( error ) { response.json(error); }
+        if ( error ) { return response.json(error); }
         response.status(200).json(document);
     });
 
@@ -48,7 +48,7 @@ app.get('/api/cars', (request, response) => {
 
     // find all documents
     Car.find( (error, docs) => {
-        if ( error ) { response.json(error); }
+        if ( error ) { return response.json(error); }
         response.status(200).json(docs)
     });
 
@@ -62,10 +62,36 @@ app.get('/api/cars', (request, response) => {
 
 });
 
+
+app.post('/api/car/update', (request, response) => {
+    const { _id, model } = request.body;
+    Car.findByIdAndUpdate(_id, {model}, {new: true}, (error, doc) => {
+        if ( error ) { return response.json(error); }
+        response.json(doc);
+    });
+
+    /*
+    Car.findById(_id, (error, car) => {
+        if ( error ) { return response.json(error); }
+        car.set({model});
+        car.save((error, car) => {
+            if ( error ) { return response.json(error); }
+            response.json(car);
+        })
+    });
+
+    Car.update({_id}, {model}, (error, res) => {
+        if ( error ) { return response.json(error); }
+        response.json(res);
+    })
+    */
+});
+
+
 app.post('/api/car/delete', (request, response) => {
-   const { brand, all } = request.body;
+   const { brand } = request.body;
    Car.findOneAndDelete({ brand }, error => {
-       if ( error ) { response.json(error); }
+       if ( error ) { return response.json(error); }
        response.json({deleted: true});
    });
 
