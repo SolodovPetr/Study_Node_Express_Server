@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
+const secret = 'superSecret';
 
 const userSchema = mongoose.Schema({
     email: {
@@ -37,7 +38,7 @@ userSchema.pre('save', function(next) {
     }
 });
 
-// Extend userSchema.methods
+// Extend userSchema methods and statics
 
 // Compare password
 userSchema.methods.comparePassword = function ( candidatePassword, cb ) {
@@ -50,12 +51,24 @@ userSchema.methods.comparePassword = function ( candidatePassword, cb ) {
 // Generate token
 userSchema.methods.generateToken = function ( cb ) {
     const user = this;
-    const token = jwt.sign(user._id.toHexString(), 'superSecret');
+    const token = jwt.sign(user._id.toHexString(), secret);
 
     user.token = token;
     user.save( (error, user) => {
         if ( error ) { return cb( error ); }
         cb( null, user );
+    });
+}
+
+// Find user by token
+userSchema.statics.findByToken = function (token, cb) {
+    const User = this;
+    jwt.verify(token, secret, (error, decoded) => {
+        if (error) { return cb(error) }
+        User.findOne({_id: decoded, token}, (error, user) => {
+            if (error) { return cb(error) }
+            cb( null, user );
+        })
     });
 }
 

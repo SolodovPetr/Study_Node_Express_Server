@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
 const app = express();
 
 const mongoUri = require('../mogodbCredentials').uri;
@@ -12,6 +12,7 @@ mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true, us
 
 // MIDDLEWARE
 app.use(bodyParser.json());
+app.use(cookieParser());
 
 //MODELS
 const { User } = require('./models/user');
@@ -44,9 +45,19 @@ app.post('/api/user/login', (request, response) => {
             // Generate token and set cookie
             user.generateToken( (error, user) => {
                  if ( error ) { return response.status(400).send(error); }
-                 response.cookie('x-auth', user.token).send('ok');
+                 response.cookie('auth', user.token).send('ok');
             })
         });
+    });
+});
+
+// Checking indicate user by token
+app.get('/api/tokencheck', (request, response) => {
+    const token = request.cookies.auth;
+    User.findByToken(token, (error, user) => {
+        if ( error ) { return response.status(400).send('Invalid token!'); }
+        if ( !user ) { return response.status(401).send('Authentication failed.'); }
+        response.status(200).send(user.email);
     });
 });
 
