@@ -13,6 +13,7 @@ mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true, us
 // MIDDLEWARE
 app.use(bodyParser.json());
 app.use(cookieParser());
+const { authenticate } = require('./middleware/auth');
 
 //MODELS
 const { User } = require('./models/user');
@@ -52,13 +53,19 @@ app.post('/api/user/login', (request, response) => {
 });
 
 // Checking indicate user by token
-app.get('/api/tokencheck', (request, response) => {
+app.get('/api/tokencheck', authenticate, (request, response) => {
+
+    const { email, token }  = request;
+    response.status(200).send({email, token});
+
+    /* // Has been moved to Middleware
     const token = request.cookies.auth;
     User.findByToken(token, (error, user) => {
         if ( error ) { return response.status(400).send('Invalid token!'); }
         if ( !user ) { return response.status(401).send('Authentication failed.'); }
         response.status(200).send(user.email);
     });
+    */
 });
 
 const port = process.env.PORT || 3001;
