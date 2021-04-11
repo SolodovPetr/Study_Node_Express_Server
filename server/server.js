@@ -37,7 +37,15 @@ app.post('/api/user/login', (request, response) => {
         // Compare pass with hash from db using userSchema.methods.comparePassword
         user.comparePassword( request.body.password, (error, isMatch) => {
             if ( error ) { return response.json(error); }
-            response.status(200).send(isMatch);
+            if ( !isMatch ) {
+                return response.status(400)
+                    .json({message: 'Wrong password'});
+            }
+            // Generate token and set cookie
+            user.generateToken( (error, user) => {
+                 if ( error ) { return response.status(400).send(error); }
+                 response.cookie('x-auth', user.token).send('ok');
+            })
         });
     });
 });
